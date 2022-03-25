@@ -7,8 +7,7 @@ const userRoute = require("./routes/users")
 const authRoute = require("./routes/auth")
 
 const app = express();
-//const port = process.env.PORT || 3000;
-app.set('port', process.env.PORT || 3000);
+const port = process.env.PORT || 1337;
 
 require("dotenv").config();
 
@@ -27,4 +26,6 @@ app.use("/api/auth", authRoute);
 
 app.listen(port, () => {
     console.log("Backend server is running! in the port: ", port);
-})
+});
+
+
