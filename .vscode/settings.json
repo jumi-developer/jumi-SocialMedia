@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/698eaf9c-49e1-4864-b541-a6e4d30329f3/resourceGroups/proyectodad/providers/Microsoft.Web/sites/g8socialmedia",
+    "appService.deploySubpath": "."
+}
