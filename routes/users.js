@@ -55,7 +55,45 @@ router.get("/:id", async (req, res) => {
 })
 
 // Follow usuarios
+router.put("/:id/follow", async (req, res) => {
+    if (req.body.userId !== req.params.id) {
+        try {
+            const user = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body.userId);
+            if (!user.followers.includes(req.body.userId)) {
+                await user.updateOne({ $push: { followers: req.body.userId } });
+                await currentUser.updateOne({ $push: { followings: req.body.userId } });
+                res.status(200).json("El usuario ha sido seguido.")
+            } else {
+                res.status(403).json("Ya sigues a este usuario.")
+            }
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    } else {
+        res.status(403).json("No puedes seguirte a ti mismo.")
+    }
+})
 
 // Unfollow usuario
+router.put("/:id/unfollow", async (req, res) => {
+    if (req.body.userId !== req.params.id) {
+        try {
+            const user = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body.userId);
+            if (user.followers.includes(req.body.userId)) {
+                await user.updateOne({ $pull: { followers: req.body.userId } });
+                await currentUser.updateOne({ $pull: { followings: req.body.userId } });
+                res.status(200).json("Has dejado de seguir a este usuario.")
+            } else {
+                res.status(403).json("Ya no sigues a este usuario.")
+            }
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    } else {
+        res.status(403).json("No puedes no seguirte a ti mismo.")
+    }
+})
 
-module.exports = router
+module.exports = router;
