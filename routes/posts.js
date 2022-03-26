@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Post = require('../models/Post');
+const User = require('../models/User');
 
 /* router.get('/', (req, res) => {
     console.log('====================================');
@@ -54,7 +55,6 @@ router.put("/:id/like", async (req, res) => {
         const post = await Post.findById(req.params.id);
         if (!post.likes.includes(req.body.userId)) {
             await post.updateOne({ $push: { likes: req.body.userId } });
-            res.status(200).json("Le has dado like a la publicacion")
         } else {
             await post.updateOne({ $push: { likes: req.body.userId } });
             res.status(200).json("Le has dado dislike a la publicacion");
@@ -67,14 +67,27 @@ router.put("/:id/like", async (req, res) => {
 // Obtener post
 router.get("/:id", async (req, res) => {
     try {
-        const post = await Post.findOne({ id: req.params.id });
+        const post = await Post.findById({ id: req.params.id });
         res.status(200).json(post)
     } catch (error) {
         res.status(500).json(error)
     }
 })
 
-
 // Obtener timeline posts
+router.get("/timeline/all", async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.body.userId);
+        const userPosts = await Post.find({ userId: currentUser._id });
+        const friendPosts = await Promise.all(
+            currentUser.followings.map((friendId) => {
+                return Post.find({ userId: friendId });
+            })
+        );
+        res.json(userPosts.concat(...friendPosts));
+    } catch (error) {
+        res.status(500).json(error)
+    }
+})
 
 module.exports = router;
